@@ -1,125 +1,74 @@
 <!DOCTYPE html>
-<html data-wf-domain="authoredup.com" data-wf-page="65f3328466dccec70cd665c1" data-wf-site="6526c17b5fa3bc01030d024f" lang="en" data-wf-locale="en">
+<html>
 <head>
   <meta charset="utf-8">
-  <title>Post Preview Generator - Free LinkedIn Tool | AuthoredUp</title>
-  <meta content="width=device-width, initial-scale=1" name="viewport">
-  <link href="https://cdn.prod.website-files.com/6526c17b5fa3bc01030d024f/css/authup.webflow.9862672f8.min.css" rel="stylesheet" type="text/css">
+  <title>LinkedIn Preview Tool</title>
   <style>
-    /* Container principal ajustado */
+    /* ESTILOS ESSENCIAIS */
     #post-preview-tool-root {
+      padding-top: 70px; /* Espaço fixo para a barra no topo */
       position: relative;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      padding: 20px; /* Padding geral */
-      box-sizing: border-box;
-      background: #f5f5f5;
+      min-height: 100vh;
     }
     
-    /* Barra de ferramentas com padding */
-    .post-editor-header {
-      position: sticky;
+    .post-editor-toolbar {
+      position: fixed;
       top: 0;
-      z-index: 100;
+      left: 0;
+      right: 0;
+      height: 60px;
       background: white;
-      padding: 15px 20px; /* Padding interno */
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-      width: calc(100% - 40px); /* Ajuste para o padding container */
-      margin: -20px -20px 20px -20px; /* Alinhamento com o container */
-      border-radius: 8px 8px 0 0;
+      z-index: 101; /* Aumentado para garantir que fique sobre todo o conteúdo */
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      padding: 10px 20px;
     }
     
-    /* Área de conteúdo com padding */
-    .post-preview-content-container {
-      flex: 1;
-      overflow-y: auto;
+    .post-preview-content {
       padding: 20px;
-      background: white;
-      border-radius: 0 0 8px 8px;
-      margin-top: -10px; /* Ajuste fino */
-    }
-    
-    /* Ajuste para os previews */
-    .preview-wrapper {
-      margin: 30px 0;
-      padding: 20px;
-      border: 1px solid #eaeaea;
-      border-radius: 8px;
-      background: white;
-    }
-    
-    /* Garante espaço para os botões de interação */
-    .linkedin-post-footer {
-      padding: 15px 0 0 0;
-      margin-top: 20px;
-      border-top: 1px solid #eaeaea;
-      display: flex !important; /* Força exibição */
-      justify-content: space-around;
-    }
-    
-    /* Ajuste para desktop */
-    @media (min-width: 768px) {
-      .preview-wrapper {
-        min-height: 300px;
-      }
-      .desktop-preview .linkedin-post-footer {
-        padding: 20px 0;
-      }
-    }
-    
-    /* Reset de estilos interferentes */
-    .tool-embed-component > div {
-      padding: 0 !important;
-      margin: 0 !important;
+      margin-top: 70px; /* Ajuste para evitar sobreposição */
     }
   </style>
 </head>
-<body class="body" style="margin: 0; padding: 0; overflow: hidden; background: #f5f5f5">
-  <!-- Container principal com padding adequado -->
-  <div id="post-preview-tool-root" class="tool-embed-component is-flex">
-    <div style="--REM: 10px; --PostPreview-sticky-top: 88px; display: contents;">
-      <!-- Estrutura será injetada aqui -->
-    </div>
-  </div>
+<body>
 
-  <!-- Script com ajustes finais -->
-  <script src="https://files.authoredup.com/aup-post-preview-tool.js"></script>
-  <script>
-    // Sobrescreve a função para garantir os ajustes
-    const originalMount = window.mountPostPreviewTool;
-    
-    window.mountPostPreviewTool = function(container, offset) {
-      originalMount(container, offset);
-      
-      setTimeout(() => {
-        // Garante o padding interno
-        const contentAreas = container.querySelectorAll('.post-preview-content, .preview-wrapper');
-        contentAreas.forEach(area => {
-          area.style.padding = '20px';
-          area.style.margin = '15px 0';
-        });
-        
-        // Força exibição dos botões de interação
-        const footers = container.querySelectorAll('.linkedin-post-footer');
-        footers.forEach(footer => {
-          footer.style.display = 'flex';
-          footer.style.visibility = 'visible';
-          footer.style.opacity = '1';
-        });
-        
-        // Ajuste fino para desktop
-        const desktopPreview = container.querySelector('.desktop-preview');
-        if(desktopPreview) {
-          desktopPreview.style.minHeight = '350px';
-          desktopPreview.querySelector('.linkedin-post-footer').style.padding = '20px 0';
-        }
-      }, 800);
-    };
-    
-    // Inicializa
-    window.mountPostPreviewTool(document.getElementById("post-preview-tool-root"), 88);
-  </script>
+<!-- CONTAINER PRINCIPAL -->
+<div id="post-preview-tool-root">
+  <div class="post-editor-toolbar">
+    <!-- Barra de ferramentas ficará aqui -->
+  </div>
+  
+  <div class="post-preview-content">
+    <!-- Conteúdo do preview ficará aqui -->
+  </div>
+</div>
+
+<script src="https://files.authoredup.com/aup-post-preview-tool.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const toolbar = document.querySelector('.post-editor-toolbar');
+  const content = document.querySelector('.post-preview-content');
+  
+  // Garante que a barra está fixa no topo corretamente
+  toolbar.style.position = 'fixed';
+  toolbar.style.top = '0';
+  toolbar.style.left = '0';
+  toolbar.style.right = '0';
+  toolbar.style.zIndex = '101'; // Aumentado para evitar sobreposição de outros elementos
+  
+  // Ajusta o espaçamento do conteúdo para evitar sobreposição
+  content.style.marginTop = '70px';
+  
+  // Aguarda o carregamento da função antes de chamar
+  function initPostPreviewTool() {
+    if (window.mountPostPreviewTool) {
+      window.mountPostPreviewTool(document.getElementById('post-preview-tool-root'), 60);
+    } else {
+      setTimeout(initPostPreviewTool, 100); // Tenta novamente se ainda não carregou
+    }
+  }
+  initPostPreviewTool();
+});
+</script>
+
 </body>
 </html>
