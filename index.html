@@ -4,23 +4,22 @@
   <meta charset="utf-8">
   <title>LinkedIn Preview Tool</title>
   <style>
-    /* ESTILO QUE VAI FIXAR DEFINITIVAMENTE A BARRA */
-    ._this_1ivtx_30._toolbar_gykyq_35 {
-      position: fixed !important;
-      top: 0 !important;
-      left: 0 !important;
-      right: 0 !important;
-      z-index: 9999 !important;
-      background: white !important;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1) !important;
-      transform: translateY(0) !important;
-      will-change: transform !important;
+    /* REMOVENDO TODOS OS ESTILOS QUE FIXAVAM A BARRA */
+    ._this_1ivtx_30._toolbar_gykyq_35,
+    [class*="_toolbar"] {
+      position: static !important;
+      top: auto !important;
+      transform: none !important;
     }
     
-    /* AJUSTE PARA O CONTEÚDO */
+    /* REMOVENDO O PADDING DO BODY */
     body {
-      padding-top: 80px !important;
-      margin: 0 !important;
+      padding-top: 0 !important;
+    }
+    
+    /* RESTAURANDO O COMPORTAMENTO NORMAL */
+    #post-preview-tool-root {
+      padding-top: 0;
     }
   </style>
 </head>
@@ -31,40 +30,27 @@
 <script src="https://files.authoredup.com/aup-post-preview-tool.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-  // Função nuclear que resolve de vez o problema
-  function nuclearFix() {
-    const toolbar = document.querySelector('._this_1ivtx_30._toolbar_gykyq_35');
-    if (!toolbar) return;
+  // FUNÇÃO PARA REMOVER O POSICIONAMENTO FIXO
+  const unfixToolbar = () => {
+    const toolbars = document.querySelectorAll('._this_1ivtx_30._toolbar_gykyq_35, [class*="_toolbar"]');
     
-    // 1. Remove todas as classes que podem estar interferindo
-    toolbar.className = '_this_1ivtx_30 _toolbar_gykyq_35 fixed-by-force';
-    
-    // 2. Aplica estilos inline com máxima prioridade
-    toolbar.style.cssText = `
-      position: fixed !important;
-      top: 0 !important;
-      left: 0 !important;
-      right: 0 !important;
-      z-index: 9999 !important;
-      background: white !important;
-      transform: none !important;
-      will-change: transform !important;
-    `;
-    
-    // 3. Bloqueia qualquer modificação futura
-    Object.defineProperty(toolbar.style, 'position', {value: 'fixed', writable: false});
-    Object.defineProperty(toolbar.style, 'top', {value: '0', writable: false});
-    Object.defineProperty(toolbar.style, 'transform', {value: 'none', writable: false});
-  }
+    toolbars.forEach(toolbar => {
+      // RESTAURA O COMPORTAMENTO NORMAL
+      toolbar.style.position = 'static';
+      toolbar.style.top = 'auto';
+      toolbar.style.transform = '';
+      toolbar.style.zIndex = '';
+    });
+  };
 
-  // Executa imediatamente e verifica periodicamente
-  nuclearFix();
-  const interval = setInterval(nuclearFix, 200);
+  // EXECUTA IMEDIATAMENTE E A CADA 500ms POR 3 SEGUNDOS
+  unfixToolbar();
+  const interval = setInterval(unfixToolbar, 500);
   setTimeout(() => clearInterval(interval), 3000);
 
-  // Mantém a funcionalidade original
+  // INICIALIZA A FERRAMENTA
   if(window.mountPostPreviewTool) {
-    window.mountPostPreviewTool(document.getElementById('post-preview-tool-root'), 80);
+    window.mountPostPreviewTool(document.getElementById('post-preview-tool-root'), 0);
   }
 });
 </script>
