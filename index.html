@@ -5,15 +5,16 @@
   <title>LinkedIn Preview Tool</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    /* RESET CRÍTICO */
+    /* RESET E ESTILOS BASE */
     body {
       margin: 0;
       padding: 0;
-      overflow-x: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background-color: #f5f5f5;
     }
     
-    /* SOLUÇÃO DEFINITIVA PARA A BARRA */
-    ._fixed-toolbar-container {
+    /* NOVA BARRA FIXA - TOTALMENTE SOB NOSSO CONTROLE */
+    #custom-fixed-toolbar {
       position: fixed !important;
       top: 0 !important;
       left: 0 !important;
@@ -21,65 +22,117 @@
       z-index: 9999 !important;
       background: white !important;
       box-shadow: 0 2px 10px rgba(0,0,0,0.1) !important;
-      padding: 12px 20px !important;
-      height: auto !important;
-      will-change: transform;
-      transform: none !important;
-      pointer-events: none; /* Permite interação com elementos abaixo */
+      padding: 15px 20px;
+      height: auto;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      align-items: center;
     }
     
-    ._fixed-toolbar-container > div {
-      pointer-events: auto; /* Reativa interação para o conteúdo da barra */
+    /* ESTILOS PARA OS ELEMENTOS DA BARRA */
+    .toolbar-section {
+      flex: 1;
+      min-width: 250px;
     }
     
-    /* AJUSTE DO CONTEÚDO */
+    .toolbar-label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #666;
+    }
+    
+    #custom-toolbar-textarea {
+      width: 100%;
+      min-height: 40px;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 14px;
+      resize: vertical;
+    }
+    
+    /* ESPAÇO PARA A BARRA FIXA */
     #post-preview-tool-root {
-      padding-top: 100px !important;
+      padding-top: 100px;
       max-width: 1200px;
       margin: 0 auto;
       width: 95%;
+    }
+    
+    /* RESPONSIVIDADE */
+    @media (max-width: 768px) {
+      #custom-fixed-toolbar {
+        padding: 10px 15px;
+        gap: 15px;
+      }
+      
+      .toolbar-section {
+        min-width: 100%;
+      }
     }
   </style>
 </head>
 <body>
 
-<!-- CONTAINER PARA A BARRA FIXA -->
-<div class="_fixed-toolbar-container" id="toolbar-container"></div>
+<!-- NOVA BARRA CUSTOMIZADA FIXA NO TOPO -->
+<div id="custom-fixed-toolbar">
+  <div class="toolbar-section">
+    <label class="toolbar-label" for="custom-toolbar-textarea">Text:</label>
+    <textarea id="custom-toolbar-textarea" rows="1" placeholder="Paste your post here!"></textarea>
+  </div>
+  <div class="toolbar-section">
+    <label class="toolbar-label">Attachment:</label>
+    <div>
+      <button disabled style="padding: 8px 15px; border: 1px solid #ddd; border-radius: 20px; background: #f5f5f5; color: #666;">No file selected</button>
+    </div>
+  </div>
+  <div class="toolbar-section">
+    <label class="toolbar-label">Theme:</label>
+    <div style="display: flex; gap: 10px;">
+      <button title="Light theme" style="width: 30px; height: 30px; border-radius: 50%; border: 1px solid #ddd; background: white; display: flex; align-items: center; justify-content: center;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="#666"><path d="M12 18a6 6 0 1 1 0-12 6 6 0 0 1 0 12zm0-2a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM11 1h2v3h-2V1zm0 19h2v3h-2v-3zM3.515 4.929l1.414-1.414L7.05 5.636 5.636 7.05 3.515 4.93zM16.95 18.364l1.414-1.414 2.121 2.121-1.414 1.414-2.121-2.121zm2.121-14.85l1.414 1.415-2.121 2.121-1.414-1.414 2.121-2.121zM5.636 16.95l1.414 1.414-2.121 2.121-1.414-1.414 2.121-2.121zM23 11v2h-3v-2h3zM4 11v2H1v-2h3z"></path></svg>
+      </button>
+      <button title="Dark theme" style="width: 30px; height: 30px; border-radius: 50%; border: 1px solid #ddd; background: #f5f5f5; display: flex; align-items: center; justify-content: center;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="#666"><path d="M10 7a7 7 0 0 0 12 4.9v.1c0 5.523-4.477 10-10 10S2 17.523 2 12 6.477 2 12 2h.1A6.979 6.979 0 0 0 10 7zm-6 5a8 8 0 0 0 15.062 3.762A9 9 0 0 1 8.238 4.938 7.999 7.999 0 0 0 4 12z"></path></svg>
+      </button>
+    </div>
+  </div>
+</div>
 
 <!-- CONTAINER PRINCIPAL -->
 <div id="post-preview-tool-root"></div>
 
 <script src="https://files.authoredup.com/aup-post-preview-tool.js"></script>
 <script>
-// SOLUÇÃO DEFINITIVA COM INTERVALO DE VERIFICAÇÃO
 document.addEventListener('DOMContentLoaded', function() {
-  // Função para mover a barra para o container fixo
-  function fixToolbar() {
+  // Remove a barra original assim que aparecer
+  const observer = new MutationObserver(function(mutations) {
     const originalToolbar = document.querySelector('._this_1ivtx_30._toolbar_gykyq_35');
-    const toolbarContainer = document.getElementById('toolbar-container');
-    
-    if(originalToolbar && !originalToolbar.classList.contains('_already-fixed')) {
-      // Marca como já fixado
-      originalToolbar.classList.add('_already-fixed');
-      
-      // Move a barra para o container fixo
-      toolbarContainer.appendChild(originalToolbar);
-      
-      // Garante que não há transformações aplicadas
-      originalToolbar.style.transform = 'none';
-      originalToolbar.style.position = 'static';
+    if(originalToolbar) {
+      originalToolbar.remove();
+      observer.disconnect();
     }
-  }
+  });
   
-  // Verifica a cada 100ms até a barra ser fixada
-  const checkInterval = setInterval(fixToolbar, 100);
+  observer.observe(document.body, { childList: true, subtree: true });
   
-  // Para de verificar após 5 segundos (caso a barra nunca apareça)
-  setTimeout(() => clearInterval(checkInterval), 5000);
-  
-  // Mantém a funcionalidade original
+  // Conecta nossa nova barra com a funcionalidade original
   if(window.mountPostPreviewTool) {
-    window.mountPostPreviewTool(document.getElementById('post-preview-tool-root'), 100);
+    const container = document.getElementById('post-preview-tool-root');
+    window.mountPostPreviewTool(container, 100);
+    
+    // Sincroniza nosso textarea com o original (se necessário)
+    const customTextarea = document.getElementById('custom-toolbar-textarea');
+    customTextarea.addEventListener('input', function() {
+      const originalTextarea = document.querySelector('#toolbar__r0__text');
+      if(originalTextarea) {
+        originalTextarea.value = this.value;
+        originalTextarea.dispatchEvent(new Event('input', { bubbles: true }));
+      }
+    });
   }
 });
 </script>
